@@ -5,6 +5,7 @@ export const endpoints = {
     otpVerification: "authentication/otpVerification",
     signin: "authentication/signin",
     uploadProfileImage: "authentication/uploadProfileImage",
-    updateUserName:"authentication/updateProfile"
+    updateUserName:"authentication/updateProfile",
+    getUserProfile:"authentication/getUserProfile"
   },
 }

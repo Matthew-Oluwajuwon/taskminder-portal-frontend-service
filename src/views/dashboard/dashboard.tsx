@@ -15,12 +15,12 @@ import ThemeSwitcher from "../../common/components/theme-switcher/themeSwitcher"
 import useUserInfo from "../../custom-hooks/useUserInfo"
 import { BsCalendar } from "react-icons/bs"
 import { useSetRequest } from "../../custom-hooks/useSetRequest"
-import { useUploadProfileImageMutation } from "../../store"
 import useAuthentication from "../../custom-hooks/useAuthentication"
 import { useAppSelector,useAppDispatch } from "../../store/hooks"
 import { CustomInput } from "../../common/components/forms/Input.component"
 import { SubmitButton } from "../../common/components/forms/submitButton.component"
-import { setField, useUpdateUserNameMutation } from "../../store"
+import {setField} from "../../store"
+import { useUploadProfileImageMutation, useUpdateUserNameMutation,useGetUserProfileMutation } from "../../store/apis/auth"
 import {motion} from "framer-motion"
 import {formMotion} from "../../utils/motion"
 import { Form } from "antd"
@@ -174,7 +174,9 @@ export const Dashboard: React.FC = () => {
   
     const [updateUserName, { data:updateUserNameData, isError:updateUserNameIsError, isLoading:updateUserNameIsLoading,error:updateUserNameError}] = useUpdateUserNameMutation();
     useAuthentication(updateUserNameData,updateUserNameIsLoading,updateUserNameError,updateUserNameIsError)
+    const [getUserProfile,{data:userProfileData, isError:userProfileIsError,isLoading:getUserProfileIsLoading, error:getUseProfileError}] = useGetUserProfileMutation()
   
+    useAuthentication(userProfileData,getUserProfileIsLoading,getUseProfileError,userProfileIsError)
 
   useEffect(() => {
     if (auth.request?.profileImage) {
@@ -256,7 +258,8 @@ export const Dashboard: React.FC = () => {
                Edit Personal Information
               </h1>
               {/* Form for editing username */}
-                <Form layout="vertical" onFinish={()=>updateUserName(auth)}>
+                <Form layout="vertical" onFinish={()=>{getUserProfile(auth)
+; updateUserName(auth)}}>
                   <motion.div className=" mt-4"  variants={formMotion()}
                     initial="hidden"
                     animate="show">
@@ -284,7 +287,7 @@ export const Dashboard: React.FC = () => {
                 >
                   Cancel
                   </Button>
-                  <SubmitButton label="Save" loading={isLoading}/>
+                  <SubmitButton label="Save" loading={updateUserNameIsLoading}/>
                   </div>
                   </motion.div>
                 </Form> 

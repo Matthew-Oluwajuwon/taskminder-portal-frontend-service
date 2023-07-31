@@ -76,9 +76,17 @@ const authApi = createApi({
           }
         }
       }),
+      getUserProfile: build.mutation({
+        query: (data: State.Auth)=>{
+          return{
+            url: endpoints.auth.getUserProfile,
+            method: FORM_METHODS.GET
+          }
+        }
+      }),
     }
   },
 })
 
-export const { useSignupMutation, useOtpVerificationMutation, useSigninMutation, useUploadProfileImageMutation, useUpdateUserNameMutation } = authApi
+export const { useSignupMutation, useOtpVerificationMutation, useSigninMutation, useUploadProfileImageMutation, useUpdateUserNameMutation, useGetUserProfileMutation } = authApi
 export { authApi }
