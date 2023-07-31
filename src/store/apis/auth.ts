@@ -64,10 +64,21 @@ const authApi = createApi({
             }
           }
         }
-      })
+      }),
+      updateUserName: build.mutation({
+        query: (data: State.Auth)=>{
+          return{
+            url: endpoints.auth.updateUserName,
+            method: FORM_METHODS.POST,
+            body: {
+              username: data.request.username
+            }
+          }
+        }
+      }),
     }
   },
 })
 
-export const { useSignupMutation, useOtpVerificationMutation, useSigninMutation, useUploadProfileImageMutation } = authApi
+export const { useSignupMutation, useOtpVerificationMutation, useSigninMutation, useUploadProfileImageMutation, useUpdateUserNameMutation } = authApi
 export { authApi }

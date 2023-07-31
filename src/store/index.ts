@@ -18,6 +18,7 @@ import {
   useOtpVerificationMutation,
   useSigninMutation,
   useUploadProfileImageMutation,
+  useUpdateUserNameMutation
 } from "./apis/auth"
 
 const reducer = combineReducers({
@@ -43,6 +44,7 @@ export {
   useOtpVerificationMutation,
   useSigninMutation,
   useUploadProfileImageMutation,
+  useUpdateUserNameMutation
 }
 
 export type AppDispatch = typeof store.dispatch

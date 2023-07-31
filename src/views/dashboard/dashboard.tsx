@@ -19,9 +19,12 @@ import { useUploadProfileImageMutation } from "../../store"
 import useAuthentication from "../../custom-hooks/useAuthentication"
 import { useAppSelector,useAppDispatch } from "../../store/hooks"
 import { CustomInput } from "../../common/components/forms/Input.component"
-import { setField } from "../../store"
+import { SubmitButton } from "../../common/components/forms/submitButton.component"
+import { setField, useUpdateUserNameMutation } from "../../store"
 import {motion} from "framer-motion"
 import {formMotion} from "../../utils/motion"
+import { Form } from "antd"
+
 
 
 export const Dashboard: React.FC = () => {
@@ -166,8 +169,12 @@ export const Dashboard: React.FC = () => {
   const { loading, prop } = useSetRequest()
 
   const [uploadProfile, { data, isError, isLoading, error }] =
-    useUploadProfileImageMutation()
+  useUploadProfileImageMutation()
   useAuthentication(data, isLoading, error, isError)
+  
+    const [updateUserName, { data:updateUserNameData, isError:updateUserNameIsError, isLoading:updateUserNameIsLoading,error:updateUserNameError}] = useUpdateUserNameMutation();
+    useAuthentication(updateUserNameData,updateUserNameIsLoading,updateUserNameError,updateUserNameIsError)
+  
 
   useEffect(() => {
     if (auth.request?.profileImage) {
@@ -247,61 +254,41 @@ export const Dashboard: React.FC = () => {
               {isEditingProfile ? (
              <> <h1 className="font-[Epilogue-500] text-[1.1rem] mb-1">
                Edit Personal Information
-              </h1> <motion.div className=" mt-4"  variants={formMotion()}
-                initial="hidden"
-                animate="show">
-                <div className="flex gap-2">
-                  <CustomInput
-                    name="username"
-                    type="text"
-                    label="Edit Username"
-                    onChange={(e) =>
-                      dispatch(setField({ key: "username", value: e.target.value }))
-                    }
-                    value={userInfo.username}
-                    rule={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    placeholder="e.g. matthewTheChef"
-                  />  
-                  <CustomInput 
-                    name="email"
-                    type="email"
-                    label="Edit Email Address"  
-                    onChange={(e) =>
-                      dispatch(setField({ key: "email", value: e.target.value }))
-                    }
-                    value={userInfo.email}
-                    rule={[
-                    {
-                      required: true,
-                      pattern: new RegExp(
-                        /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-                      ),
-                      message: "Invalid Email",
-                    },
-                  ]}/>
-                </div>
-              <div className="py-2 flex gap-4 items-center">
-                {/* button to set isEditing to false so as remove the section from the dom */}
-                <Button
-              type="primary"
-              className="text-[#F7E8E6] bg-primary-color flex items-center justify-center py-2 md:py-5 -px-2 rounded-none font-[Epilogue-600] text-[1rem]"
-              onClick={() =>{setIsEditingProfile(false)}}
-            >
-              Cancel
-              </Button>
-                <Button
-              type="primary"
-              className="bg-[#F7E8E6] text-primary-color flex items-center justify-center py-2 md:py-5 -px-2 rounded-none font-[Epilogue-600] text-[1rem]"
-              // onClick={() =>{}}
-            >
-              Save
-              </Button>
-              </div>
-              </motion.div></>) : (<>
+              </h1>
+              {/* Form for editing username */}
+                <Form layout="vertical" onFinish={()=>updateUserName(auth)}>
+                  <motion.div className=" mt-4"  variants={formMotion()}
+                    initial="hidden"
+                    animate="show">
+                      <CustomInput
+                        name="username"
+                        type="text"
+                        label="Edit Username"
+                        onChange={(e) =>
+                          dispatch(setField({ key: "username", value: e.target.value }))
+                        }
+                        value={userInfo.username}
+                        rule={[
+                          {
+                            required: true,
+                          },
+                        ]}
+                        placeholder="e.g. matthewTheChef"
+                      />
+                  <div className="py-2 flex gap-4 items-center">
+                    {/* button to set isEditing to false so as remove the section from the dom */}
+                    <Button
+                  type="primary"
+                  className="bg-[#F7E8E6] text-primary-color flex items-center justify-center py-2 md:py-5 -px-2 rounded-none font-[Epilogue-600] text-[1rem]"
+                  onClick={() =>{setIsEditingProfile(false)}}
+                >
+                  Cancel
+                  </Button>
+                  <SubmitButton label="Save" loading={isLoading}/>
+                  </div>
+                  </motion.div>
+                </Form> 
+              </>) : (<>
                   <h1 className="font-[Epilogue-500] text-[1.1rem] mb-1">
                 Personal Information
               </h1>
