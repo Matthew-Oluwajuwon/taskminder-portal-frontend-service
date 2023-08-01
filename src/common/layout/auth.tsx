@@ -12,7 +12,7 @@ const AuthLayout: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const data = location.pathname === "/"
-  const { global } = useAppSelector((state) => {
+  const { auth } = useAppSelector((state) => {
     return state
   })
   useLayoutEffect(() => {
@@ -24,14 +24,13 @@ const AuthLayout: React.FC = () => {
         : location.pathname === ROUTE_NAMES.AUTHENTICATION?.OTP_VERIFICATION
         ? "OTP Verification | TaskMinder"
         : ""
-  }, [global.isChangingPassword, location.pathname, navigate])
+  }, [auth.isChangingPassword, location.pathname, navigate])
   
   useEffect(() => {
-    
-    if (sessionStorage.getItem("***") && !global.isChangingPassword) {
+    if (sessionStorage.getItem("***") && !auth.isChangingPassword) {
       return navigate(ROUTE_NAMES.PROTECTED_ROUTES.DASHBOARD, { replace: true })
     }
-  }, [global.isChangingPassword, navigate])
+  }, [auth.isChangingPassword, navigate])
   
 
   return (
@@ -41,7 +40,11 @@ const AuthLayout: React.FC = () => {
         <div className="font-[Epilogue-600] text-[#ffffff] text-[3.5rem] sm:text-[5rem] lg:w-[60%] mt-24 leading-none">
           <Typewriter
             options={{
-              strings: data ? AuthPageSideText.Signin : AuthPageSideText.Signup,
+              strings: data
+                ? AuthPageSideText.Signin
+                : AuthPageSideText.Signup
+                ? AuthPageSideText.ChangePassword
+                : "",
               autoStart: true,
               loop: true,
             }}

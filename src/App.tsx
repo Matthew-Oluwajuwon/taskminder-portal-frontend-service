@@ -1,7 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Route, Routes } from "react-router-dom"
 import AuthLayout from "./common/layout/auth"
-import { OTPVerification, SignIn, SignUp } from "./views/authentication"
+import {
+  OTPVerification,
+  SignIn,
+  SignUp,
+  ChangePassword,
+} from "./views/authentication"
 import { ConfigProvider } from "antd"
 import { getThemeConfig } from "./theme.config"
 import { PageLayout } from "./common/layout/page"
@@ -33,6 +38,11 @@ const App = () => {
             element={<SignUp />}
           />
           <Route
+            path={ROUTE_NAMES.AUTHENTICATION.CHANGE_PASSWORD}
+            element={<ChangePassword />}
+          />
+
+          <Route
             path={ROUTE_NAMES.AUTHENTICATION.OTP_VERIFICATION}
             element={
               <ProtectedRoute
@@ -51,7 +61,9 @@ const App = () => {
         <Route
           path={ROUTE_NAMES.PROTECTED_ROUTES.DASHBOARD}
           element={
-            <ProtectedRoute isLoggedIn={sessionStorage.getItem("***") ? true : false}>
+            <ProtectedRoute
+              isLoggedIn={sessionStorage.getItem("***") ? true : false}
+            >
               <PageLayout />
             </ProtectedRoute>
           }
