@@ -32,6 +32,7 @@ export const ROUTE_NAMES = {
     SIGN_UP: "/signup",
     SIGN_IN: "/",
     OTP_VERIFICATION: "/otp-verification",
+    CHANGE_PASSWORD:"/change-password",
   },
   PROTECTED_ROUTES: {
     DASHBOARD: "/dashboard",

@@ -32,5 +32,7 @@ export namespace State {
     hasNumber: boolean
     isSpecialChar: boolean
     postUrl: string
+    isChangingPassword?: boolean
+
   }
 }

@@ -15,21 +15,23 @@ import ThemeSwitcher from "../../common/components/theme-switcher/themeSwitcher"
 import useUserInfo from "../../custom-hooks/useUserInfo"
 import { BsCalendar } from "react-icons/bs"
 import { useSetRequest } from "../../custom-hooks/useSetRequest"
-import { useUploadProfileImageMutation } from "../../store"
 import useAuthentication from "../../custom-hooks/useAuthentication"
-import { useAppSelector,useAppDispatch } from "../../store/hooks"
+import { useAppSelector, useAppDispatch } from "../../store/hooks"
 import { CustomInput } from "../../common/components/forms/Input.component"
 import { SubmitButton } from "../../common/components/forms/submitButton.component"
-import { setField, useUpdateUserNameMutation } from "../../store"
-import {motion} from "framer-motion"
-import {formMotion} from "../../utils/motion"
+import {
+  setField,
+  useUploadProfileImageMutation,
+  useUpdateUserNameMutation,
+  useGetUserProfileMutation,
+  setAuthState,
+} from "../../store"
+import { motion } from "framer-motion"
+import { formMotion } from "../../utils/motion"
 import { Form } from "antd"
 
-
-
 export const Dashboard: React.FC = () => {
-    const dispatch = useAppDispatch()
-
+  const dispatch = useAppDispatch()
   useLayoutEffect(() => {
     document.title = "Dashboard | TaskMinder"
   }, [])
@@ -169,12 +171,40 @@ export const Dashboard: React.FC = () => {
   const { loading, prop } = useSetRequest()
 
   const [uploadProfile, { data, isError, isLoading, error }] =
-  useUploadProfileImageMutation()
+    useUploadProfileImageMutation()
   useAuthentication(data, isLoading, error, isError)
-  
-    const [updateUserName, { data:updateUserNameData, isError:updateUserNameIsError, isLoading:updateUserNameIsLoading,error:updateUserNameError}] = useUpdateUserNameMutation();
-    useAuthentication(updateUserNameData,updateUserNameIsLoading,updateUserNameError,updateUserNameIsError)
-  
+
+  const [
+    updateUserName,
+    {
+      data: updateUserNameData,
+      isError: updateUserNameIsError,
+      isLoading: updateUserNameIsLoading,
+      error: updateUserNameError,
+    },
+  ] = useUpdateUserNameMutation()
+  useAuthentication(
+    updateUserNameData,
+    updateUserNameIsLoading,
+    updateUserNameError,
+    updateUserNameIsError,
+  )
+  const [
+    getUserProfile,
+    {
+      data: userProfileData,
+      isError: userProfileIsError,
+      isLoading: getUserProfileIsLoading,
+      error: getUseProfileError,
+    },
+  ] = useGetUserProfileMutation()
+
+  useAuthentication(
+    userProfileData,
+    getUserProfileIsLoading,
+    getUseProfileError,
+    userProfileIsError,
+  )
 
   useEffect(() => {
     if (auth.request?.profileImage) {
@@ -183,6 +213,10 @@ export const Dashboard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadProfile, auth.request.profileImage])
 
+  const handleChangePassword = () => {
+    dispatch(setAuthState({ key: "isChangingPassword", value: true }))
+    navigate(ROUTE_NAMES.AUTHENTICATION.CHANGE_PASSWORD)
+  }
   return (
     <>
       <header className="flex justify-between items-start mt-2 md:mt-8">
@@ -249,23 +283,38 @@ export const Dashboard: React.FC = () => {
               </Button>
             </Upload>
             <div className="mt-10 leading-loose text-[#000000] dark:text-[#ffffff]">
-          
               {/* check if isEditingProfile === true before rendering the edit profile section and render just personal information if it is false */}
               {isEditingProfile ? (
-             <> <h1 className="font-[Epilogue-500] text-[1.1rem] mb-1">
-               Edit Personal Information
-              </h1>
-              {/* Form for editing username */}
-                <Form layout="vertical" onFinish={()=>updateUserName(auth)}>
-                  <motion.div className=" mt-4"  variants={formMotion()}
-                    initial="hidden"
-                    animate="show">
+                <>
+                  {" "}
+                  <h1 className="font-[Epilogue-500] text-[1.1rem] mb-1">
+                    Edit Personal Information
+                  </h1>
+                  {/* Form for editing username */}
+                  <Form
+                    layout="vertical"
+                    onFinish={() => {
+                      getUserProfile(auth)
+                      updateUserName(auth)
+                    }}
+                  >
+                    <motion.div
+                      className=" mt-4"
+                      variants={formMotion()}
+                      initial="hidden"
+                      animate="show"
+                    >
                       <CustomInput
                         name="username"
                         type="text"
                         label="Edit Username"
                         onChange={(e) =>
-                          dispatch(setField({ key: "username", value: e.target.value }))
+                          dispatch(
+                            setField({
+                              key: "username",
+                              value: e.target.value,
+                            }),
+                          )
                         }
                         value={userInfo.username}
                         rule={[
@@ -275,43 +324,56 @@ export const Dashboard: React.FC = () => {
                         ]}
                         placeholder="e.g. matthewTheChef"
                       />
-                  <div className="py-2 flex gap-4 items-center">
-                    {/* button to set isEditing to false so as remove the section from the dom */}
-                    <Button
-                  type="primary"
-                  className="bg-[#F7E8E6] text-primary-color flex items-center justify-center py-2 md:py-5 -px-2 rounded-none font-[Epilogue-600] text-[1rem]"
-                  onClick={() =>{setIsEditingProfile(false)}}
-                >
-                  Cancel
-                  </Button>
-                  <SubmitButton label="Save" loading={isLoading}/>
-                  </div>
-                  </motion.div>
-                </Form> 
-              </>) : (<>
+                      <div className="py-2 flex gap-4 items-center">
+                        {/* button to set isEditing to false so as remove the section from the dom */}
+                        <Button
+                          type="primary"
+                          className="bg-[#F7E8E6] text-primary-color flex items-center justify-center py-2 md:py-5 -px-2 rounded-none font-[Epilogue-600] text-[1rem]"
+                          onClick={() => {
+                            setIsEditingProfile(false)
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <SubmitButton
+                          label="Save"
+                          loading={updateUserNameIsLoading}
+                        />
+                      </div>
+                    </motion.div>
+                  </Form>
+                </>
+              ) : (
+                <>
                   <h1 className="font-[Epilogue-500] text-[1.1rem] mb-1">
-                Personal Information
-              </h1>
-              <div className="text-[#5C5C5C] dark:text-[#ffffff] font-[Epilogue-400] text-[0.8rem]">
-                  <h2 className="grid lg:flex items-center justify-between">
-                    Username:&nbsp;{" "}
-                    <span className="text-[#000000] dark:text-[#ffffff]">
-                      {userInfo.username}
-                    </span>
-                  </h2>
-                  <h2 className="grid lg:flex items-center justify-between">
-                    Email Address:&nbsp;{" "}
-                    <span className="text-[#000000] dark:text-[#ffffff]">
-                      {userInfo.email}
-                    </span>
-                  </h2>
-                  {/* toggler button to show or hide edit section */}
-                <button className="text-primary-color w-fit cursor-pointer text-[0.8rem] 
-                font-[Epilogue-400]" onClick={()=>{setIsEditingProfile(!isEditingProfile)}}>
-                  Edit
-                </button>
-              </div>
-              </>)}
+                    Personal Information
+                  </h1>
+                  <div className="text-[#5C5C5C] dark:text-[#ffffff] font-[Epilogue-400] text-[0.8rem]">
+                    <h2 className="grid lg:flex items-center justify-between">
+                      Username:&nbsp;{" "}
+                      <span className="text-[#000000] dark:text-[#ffffff] contents">
+                        {userInfo.username}
+                      </span>
+                    </h2>
+                    <h2 className="grid lg:flex items-center justify-between">
+                      Email Address:&nbsp;{" "}
+                      <span className="text-[#000000] dark:text-[#ffffff] contents">
+                        {userInfo.email}
+                      </span>
+                    </h2>
+                    {/* toggler button to show or hide edit section */}
+                    <button
+                      className="text-primary-color w-fit cursor-pointer text-[0.8rem] 
+                font-[Epilogue-400]"
+                      onClick={() => {
+                        setIsEditingProfile(!isEditingProfile)
+                      }}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </>
+              )}
               <div className="mt-10 leading-loose">
                 <h1 className="font-[Epilogue-500] text-[#000000] dark:text-[#ffffff] text-[1.1rem] mb-1">
                   Security
@@ -319,7 +381,10 @@ export const Dashboard: React.FC = () => {
                 <div className="text-[#5C5C5C] dar:text-[#ffffff] font-[Epilogue-400] text-[0.8rem]">
                   <h2 className="grid lg:flex items-center justify-between text-[#000000] dark:text-[#ffffff]">
                     Password:&nbsp;{" "}
-                    <span className="text-[#E15341] cursor-pointer">
+                    <span
+                      className="text-[#E15341] cursor-pointer"
+                      onClick={handleChangePassword}
+                    >
                       Change Password
                     </span>
                   </h2>
