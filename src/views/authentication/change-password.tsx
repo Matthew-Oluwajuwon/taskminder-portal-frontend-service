@@ -49,8 +49,9 @@ export const ChangePassword: React.FC = () => {
         Authorize Change
       </h1>
       <p className="text-[#B8B6B6] font-[Epilogue-400] mt-2 leading-relaxed">
-        We have sent a verification code to <span className="font-bold">{userInfo?.email}</span>,
-        enter it to change password
+        We have sent a verification code to{" "}
+        <span className="font-bold">{userInfo?.email}</span>, enter it to change
+        password
       </p>
       <Form
         className="lg:w-[75%] xl:w-[60%] mt-10"
@@ -64,6 +65,10 @@ export const ChangePassword: React.FC = () => {
           {
             name: "password",
             value: state.request?.password,
+          },
+          {
+            name: "Cpassword",
+            value: "",
           },
         ]}
       >
@@ -119,7 +124,7 @@ export const ChangePassword: React.FC = () => {
             <Col span={24}>
               <CustomInput
                 label="Confirm New Password"
-                name="password"
+                name="Cpassword"
                 onChange={(e) => setResetInputField(e.target.value, "password")}
                 value={state.request?.password}
                 rule={[{ required: true }, { validator: passwordValidator }]}

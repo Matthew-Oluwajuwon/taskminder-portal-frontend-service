@@ -17,21 +17,22 @@ const AuthLayout: React.FC = () => {
   })
   useLayoutEffect(() => {
     document.title =
-    location.pathname === ROUTE_NAMES.AUTHENTICATION?.SIGN_IN
+      location.pathname === ROUTE_NAMES.AUTHENTICATION?.SIGN_IN
         ? "Sign in | TaskMinder"
         : location.pathname === ROUTE_NAMES.AUTHENTICATION?.SIGN_UP
         ? "Sign Up | TaskMinder"
         : location.pathname === ROUTE_NAMES.AUTHENTICATION?.OTP_VERIFICATION
         ? "OTP Verification | TaskMinder"
+        : location.pathname === ROUTE_NAMES.AUTHENTICATION?.CHANGE_PASSWORD
+        ? "Change Password | TaskMinder"
         : ""
   }, [auth.isChangingPassword, location.pathname, navigate])
-  
+
   useEffect(() => {
     if (sessionStorage.getItem("***") && !auth.isChangingPassword) {
       return navigate(ROUTE_NAMES.PROTECTED_ROUTES.DASHBOARD, { replace: true })
     }
   }, [auth.isChangingPassword, navigate])
-  
 
   return (
     <div className="h-[100svh] grid grid-cols-1 lg:grid-cols-2">
